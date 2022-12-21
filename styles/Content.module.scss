@@ -1,0 +1,46 @@
+@mixin container($bg-color, $color) {
+    overflow: hidden;
+
+    background-color: $bg-color;
+    color: $color;
+    position: relative;
+
+    height: calc(100% - 40px - 4rem);
+
+    &>div {
+        box-sizing: border-box;
+        padding: 1rem;
+
+        overflow-y: scroll;
+        height: 100% !important;
+    }
+
+    & input,
+    & button {
+        background-color: $bg-color;
+        color: $color;
+        border: 1px solid $color;
+    }
+
+    & input:focus,
+    & button:focus {
+        outline: none;
+    }
+
+    & button:active {
+        opacity: 0.6;
+    }
+}
+
+
+.content-container {
+    @include container(rgb(28, 28, 28), rgb(255, 255, 255));
+}
+
+.content-container-light {
+    @include container(#fff, rgb(28, 28, 28));
+
+    & input[type="checkbox"] {
+        color-scheme: light;
+    }
+}

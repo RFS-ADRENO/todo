@@ -1,0 +1,22 @@
+.page-about {}
+
+.page-title {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.page-content {
+
+    & a {
+        color: #fff;
+        display: inline;
+        font-weight: bold;
+    }
+}
+
+.page-footer {
+    // make it at the bottom
+    position: absolute;
+    bottom: 20px;
+    /* Footer height */
+}

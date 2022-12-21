@@ -1,0 +1,19 @@
+@mixin bottom-navigate($bg-color, $color) {
+    position: sticky;
+    background-color: $bg-color;
+    color: $color;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    height: 20px;
+}
+
+.bottom-nav {
+    @include bottom-navigate(rgb(49, 49, 49), #fff);
+}
+
+.bottom-nav-light {
+    @include bottom-navigate(rgb(214, 214, 214), rgb(49, 49, 49));
+}

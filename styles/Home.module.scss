@@ -1,0 +1,78 @@
+@mixin flex($direction, $align, $justify) {
+    display: flex;
+    flex-direction: $direction;
+    align-items: $align;
+    justify-content: $justify;
+}
+
+.container {
+    overflow-y: scroll;
+}
+
+.page-title {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.form {
+    @include flex(row, center, center);
+
+    gap: 1rem;
+
+    & input,
+    & button {
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+    }
+}
+
+.list {
+    list-style: none;
+    @include flex(column, center, center);
+
+    gap: 1rem;
+
+    & li {
+        width: 100%;
+        @include flex(row, center, space-between);
+
+        gap: 1rem;
+
+        & p {
+            // wrap text
+            word-wrap: break-word;
+
+            // truncate text
+            overflow: hidden;
+        }
+
+        &>div {
+            @include flex(row, center, center);
+
+            gap: .4rem;
+        }
+
+        & input {
+            padding: 0.5rem;
+
+            height: 17px;
+            width: 17px;
+        }
+
+        & svg {
+            cursor: pointer;
+        }
+    }
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.loading,
+.deleting,
+.checkboxes {
+    pointer-events: none;
+
+    cursor: not-allowed;
+}

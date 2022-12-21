@@ -1,0 +1,24 @@
+@mixin header-main ($bg-color, $color) {
+    position: sticky;
+    background-color: $bg-color;
+    color: $color;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    height: 20px;
+}
+
+.header-main {
+    @include header-main(rgb(49, 49, 49), #fff);
+}
+
+.header-main-light {
+    @include header-main(rgb(214, 214, 214), rgb(49, 49, 49));
+}
+
+.toggle-dark-mode {
+    padding: 0.3rem;
+    cursor: pointer;
+}

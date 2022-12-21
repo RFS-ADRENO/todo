@@ -2,12 +2,15 @@
   "name": "todo-app",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
+  "author": "DimensityDU",
+  "license": "MIT",
   "dependencies": {
     "@next/font": "13.0.7",
     "@types/node": "18.11.17",
@@ -18,6 +21,10 @@
     "next": "13.0.7",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-icons": "^4.7.1",
     "typescript": "4.9.4"
+  },
+  "devDependencies": {
+    "sass": "^1.57.0"
   }
 }
