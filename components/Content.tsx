@@ -7,9 +7,11 @@ type Props = {
 }
 
 export default function Content({ children }: Props) {
-    const { darkMode, setDarkMode } = useStateContext();
+    const { darkMode } = useStateContext();
+
     return (
         <main className={darkMode ? styles["content-container"] : styles["content-container-light"]}>
+
             {children}
         </main>
     )

@@ -1,16 +1,21 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useStateContext } from '../context/states'
 import styles from '../styles/About.module.scss'
 
 type Props = {}
 
 export default function About({ }: Props) {
+    const context = useStateContext();
+
     return (
         <div
             className={styles["page-about"]}
         >
             <h2 className={styles["page-title"]}>ABOUT</h2>
             <br />
-            <div className={styles["page-content"]}>
+            <div className={
+                context.darkMode ? styles["page-content"] : styles["page-content-light"]
+            }>
                 <div>
                     <h3>What is this?</h3>
                     <p>

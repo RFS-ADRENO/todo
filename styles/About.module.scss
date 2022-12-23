@@ -1,3 +1,11 @@
+@mixin content($color) {
+    & a {
+        color: $color;
+        display: inline;
+        font-weight: bold;
+    }
+}
+
 .page-about {}
 
 .page-title {
@@ -6,12 +14,11 @@
 }
 
 .page-content {
+    @include content(#fff);
+}
 
-    & a {
-        color: #fff;
-        display: inline;
-        font-weight: bold;
-    }
+.page-content-light {
+    @include content(#000);
 }
 
 .page-footer {

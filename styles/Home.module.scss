@@ -11,7 +11,7 @@
 
 .page-title {
     text-align: center;
-    margin: 1rem 0;
+    margin: .9rem 0;
 }
 
 .form {
@@ -23,6 +23,7 @@
     & button {
         padding: 0.5rem;
         border-radius: 0.25rem;
+        transition: all 0.3s ease;
     }
 }
 

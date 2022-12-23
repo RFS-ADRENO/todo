@@ -1,7 +1,10 @@
-import React, { useEffect, useMemo, useState, useRef } from 'react'
-import { useStateContext } from '../context/states'
+import React, { useEffect, useRef, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
+import Login from '../components/Login'
+import { useStateContext } from '../context/states'
 import styles from '../styles/Home.module.scss'
+
+import { getDatabase, onValue, ref, get, set, Unsubscribe } from "firebase/database"
 
 interface Item {
     id: number
@@ -11,50 +14,89 @@ interface Item {
 
 type Props = {}
 
+function parseData(str: string) {
+    const data = str.split("__").filter(item => item !== "" && item.split("_")[0])
+
+    return data.map((item, index) => {
+        const [title, completed] = item.split("_");
+
+        return {
+            id: index + 1,
+            title,
+            completed: completed === '1'
+        }
+    })
+}
+
+function parseDataBack(data: Item[]) {
+    return data.map(item => {
+        return `${item.title}_${item.completed ? '1' : '0'}`
+    }).join("__")
+}
+
 export default function Home({ }: Props) {
     const [data, setData] = useState<Item[] | null>(null)
     const [loading, setLoading] = useState(false)
-    const [deleting, setDeleting] = useState(false)
-    const [checkboxes, setCheckboxes] = useState(false)
+    const { user } = useStateContext();
+
     const inputRef = useRef<HTMLInputElement>(null)
 
     const { updating, setUpdating } = useStateContext();
 
     useEffect(() => {
-        const controller = new AbortController()
-        const signal = controller.signal;
+        var unsubscribe: Unsubscribe;
 
-        var localData = localStorage.getItem('data');
+        async function loadData() {
+            var localData = localStorage.getItem('data') || "";
+            try {
+                console.log(!!user)
+                if (localData && !user) {
+                    setData(parseData(localData))
+                } else if (user) {
+                    const db = getDatabase();
+                    const userRef = ref(db, 'users/' + user.uid);
 
-        if (localData) {
-            setData(JSON.parse(localData))
-        } else {
-            // simulate no fetch data
-            if (true) {
-                localData = JSON.stringify([]);
-            } else {
-                fetch('http://localhost:3000/items.json', { signal })
-                    .then(response => response.json())
-                    .then(json => {
-                        setData(json)
-                    })
-                    .catch(error => {
-                        if (error.name !== 'AbortError') {
-                            throw error
-                        }
-                    });
+                    const _data = await get(userRef);
+
+                    if (_data.exists()) {
+                        setData(parseData(_data.val()))
+                    } else if (localData) {
+                        setData(parseData(localData))
+
+                        await set(userRef, localData)
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+            }
+
+            if (!data) {
+                setData(parseData(localData))
+            }
+
+            if (user) {
+                const db = getDatabase();
+                const userRef = ref(db, 'users/' + user.uid);
+
+                unsubscribe = onValue(userRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        setData(parseData(snapshot.val()))
+                    }
+                }, (error) => {
+                    console.error(error);
+                })
             }
         }
 
-        if (!data) {
-            setData(JSON.parse(localData))
-        }
+        loadData()
 
         return () => {
-            controller.abort()
+            if (unsubscribe) {
+                unsubscribe();
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [user])
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -72,9 +114,17 @@ export default function Home({ }: Props) {
                 completed: false
             })
 
+            if (user) {
+                const db = getDatabase();
+                const userRef = ref(db, 'users/' + user.uid)
+
+                await set(userRef, parseDataBack(newData))
+            } else {
+                localStorage.setItem('data', parseDataBack(newData))
+            }
+
             setData(newData)
             inputRef.current.value = ''
-            localStorage.setItem('data', JSON.stringify(newData))
         }
 
 
@@ -87,9 +137,17 @@ export default function Home({ }: Props) {
         setUpdating(true)
         const newData = [...(data || [])]
         newData.splice(index, 1)
-        setData(newData)
 
-        localStorage.setItem('data', JSON.stringify(newData))
+        if (user) {
+            const db = getDatabase();
+            const userRef = ref(db, 'users/' + user.uid)
+
+            await set(userRef, parseDataBack(newData))
+        } else {
+            localStorage.setItem('data', parseDataBack(newData))
+        }
+
+        setData(newData)
 
         await new Promise(resolve => setTimeout(resolve, 100))
         setUpdating(false)
@@ -99,8 +157,17 @@ export default function Home({ }: Props) {
         setUpdating(true)
         const newData = [...(data || [])]
         newData[index].completed = !newData[index].completed
+
+        if (user) {
+            const db = getDatabase();
+            const userRef = ref(db, 'users/' + user.uid);
+
+            await set(userRef, parseDataBack(newData))
+        } else {
+            localStorage.setItem('data', parseDataBack(newData))
+        }
+
         setData(newData)
-        localStorage.setItem('data', JSON.stringify(newData))
 
         await new Promise(resolve => setTimeout(resolve, 100))
         setUpdating(false)
@@ -108,9 +175,9 @@ export default function Home({ }: Props) {
 
     return (
         <div className={styles.container}>
+
+            <Login />
             <h2 className={styles["page-title"]}>Home</h2>
-            <br />
-            <br />
             <form className={styles.form} onSubmit={handleSubmit}>
                 <input
                     type="text"
@@ -119,6 +186,7 @@ export default function Home({ }: Props) {
                     id='title'
                     ref={inputRef}
                     maxLength={30}
+                    pattern="^(?!.*(_)).*$"
                 />
                 <button
                     type="submit"
