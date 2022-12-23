@@ -49,7 +49,6 @@ export default function Home({ }: Props) {
         async function loadData() {
             var localData = localStorage.getItem('data') || "";
             try {
-                console.log(!!user)
                 if (localData && !user) {
                     setData(parseData(localData))
                 } else if (user) {
