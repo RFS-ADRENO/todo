@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "static": "next build && next export"
+    "static:build": "next build && next export"
   },
   "author": "DimensityDU",
   "license": "MIT",
